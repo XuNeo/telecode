@@ -26,13 +26,13 @@
 Install Telecode with a single command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/anomalyco/telecode/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/futureCreator/telecode/main/install.sh | bash
 ```
 
 Or with `wget`:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/anomalyco/telecode/main/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/futureCreator/telecode/main/install.sh | bash
 ```
 
 This will:

@@ -5,7 +5,7 @@ set -e
 BINARY_NAME="telecode"
 INSTALL_DIR="$HOME/.local/bin"
 CONFIG_DIR="$HOME/.telecode"
-REPO="anomalyco/telecode"
+REPO="futureCreator/telecode"
 
 # Colors for output
 RED='\033[0;31m'
