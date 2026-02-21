@@ -1,0 +1,17 @@
+# Telecode Multi-Bot Configuration
+# Each workspace represents a separate project with its own bot
+
+workspaces:
+  - name: project-a
+    working_dir: /home/user/project-a
+    bot_token: "YOUR_BOT_TOKEN_1"
+    allowed_chats:
+      - 123456789
+    default_cli: opencode
+
+  - name: project-b
+    working_dir: /home/user/project-b
+    bot_token: "YOUR_BOT_TOKEN_2"
+    allowed_chats:
+      - 987654321
+    default_cli: claude
