@@ -30,10 +30,14 @@ func (e *OpenCodeExecutor) BuildCommand(prompt, sessionID, imagePath, model stri
 // ParseSessionID extracts session ID from OpenCode output
 func (e *OpenCodeExecutor) ParseSessionID(output string) string {
 	// Parse OpenCode session ID format
+	// Examples:
+	//   "Continue  opencode -s ses_37f9659a6ffemnd5vvn1GC2Y5Q"
+	//   "session: ses_abc123"
 	patterns := []string{
-		`session[:\s]+([a-zA-Z0-9-]+)`,
-		`session\s*id[:\s]+([a-zA-Z0-9-]+)`,
-		`--session\s+([a-zA-Z0-9-]+)`,
+		`-s\s+([a-zA-Z0-9_-]+)`,
+		`session[:\s]+([a-zA-Z0-9_-]+)`,
+		`session\s*id[:\s]+([a-zA-Z0-9_-]+)`,
+		`--session\s+([a-zA-Z0-9_-]+)`,
 	}
 
 	for _, pattern := range patterns {

@@ -18,8 +18,8 @@ func (m *Manager) handleNewSession(ctx context.Context, ws *WorkspaceBot, chatID
 	ws.Bot.NewSession(chatID)
 	_, err := ws.TgBot.SendMessage(ctx, tu.Message(
 		tu.ID(chatID),
-		"🆕 Starting new session...",
-	))
+		"✅ **New session started!**\n\nYou can now send your message.",
+	).WithParseMode(telego.ModeMarkdown))
 	return err
 }
 
@@ -100,6 +100,34 @@ func (m *Manager) handleModels(ctx context.Context, ws *WorkspaceBot, chatID int
 	_, err = ws.TgBot.SendMessage(ctx, tu.Message(
 		tu.ID(chatID),
 		modelList,
+	).WithParseMode(telego.ModeMarkdown))
+	return err
+}
+
+// handleModel handles the /model command
+func (m *Manager) handleModel(ctx context.Context, ws *WorkspaceBot, chatID int64, text string) error {
+	args := strings.Fields(text)
+
+	if len(args) == 1 {
+		// Get current model
+		model := ws.Bot.GetModel(chatID)
+		if model == "" {
+			model = "default"
+		}
+		_, err := ws.TgBot.SendMessage(ctx, tu.Message(
+			tu.ID(chatID),
+			fmt.Sprintf("📋 Current Model: `%s`", model),
+		).WithParseMode(telego.ModeMarkdown))
+		return err
+	}
+
+	// Set model
+	newModel := args[1]
+	ws.Bot.SetModel(chatID, newModel)
+
+	_, err := ws.TgBot.SendMessage(ctx, tu.Message(
+		tu.ID(chatID),
+		fmt.Sprintf("✅ Model set to: `%s` (session reset)", newModel),
 	).WithParseMode(telego.ModeMarkdown))
 	return err
 }

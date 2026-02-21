@@ -32,9 +32,9 @@ func (e *ClaudeExecutor) BuildCommand(prompt, sessionID, imagePath, model string
 func (e *ClaudeExecutor) ParseSessionID(output string) string {
 	// Try various session ID formats
 	patterns := []string{
-		`session[:\s]+([a-zA-Z0-9-]+)`,
-		`session\s*id[:\s]+([a-zA-Z0-9-]+)`,
-		`resuming\s+session[:\s]+([a-zA-Z0-9-]+)`,
+		`session[:\s]+([a-zA-Z0-9_-]+)`,
+		`session\s*id[:\s]+([a-zA-Z0-9_-]+)`,
+		`resuming\s+session[:\s]+([a-zA-Z0-9_-]+)`,
 	}
 
 	for _, pattern := range patterns {

@@ -1,6 +1,6 @@
 # Telecode - Telegram Coding Agent Bot
 
-텔레그램을 통해 AI 코딩 어시스턴트(Claude Code, OpenCode)를 원격으로 사용할 수 있는 멀티봇 서버입니다. 여러 프로젝트를 동시에 관리할 수 있는 설정 파일 기반 구조를 지원합니다.
+A multi-bot server for remotely using AI coding assistants (Claude Code, OpenCode) via Telegram. Supports a configuration file-based structure for managing multiple projects simultaneously.
 
 ## Features
 
@@ -102,9 +102,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ## Configuration
 
-Telecode supports two configuration modes:
-
-### Option 1: Configuration File (Recommended for Multi-Bot)
+### Configuration File
 
 Generate an example configuration file:
 
@@ -139,16 +137,6 @@ workspaces:
 | `allowed_chats` | List of allowed chat_ids | ❌ | All blocked |
 | `default_cli` | Default CLI (claude/opencode) | ❌ | `claude` |
 
-### Option 2: Environment Variables (Single Bot)
-
-For simple single-bot setups:
-
-| Variable | Description | Required | Example |
-|----------|-------------|----------|---------|
-| `TELECODE_BOT_TOKEN` | Telegram Bot API token | ✅ | `123456:ABC-DEF...` |
-| `TELECODE_ALLOWED_CHATS` | Allowed chat_ids (comma-separated) | ✅ | `5788362055,123456789` |
-| `TELECODE_DEFAULT_CLI` | Default CLI (claude/opencode) | ❌ | `claude` |
-
 ### CLI API Keys
 
 Claude Code and OpenCode manage their own API keys, no additional configuration needed.
@@ -163,11 +151,6 @@ telecode
 
 # Specify custom config file
 telecode -config /path/to/config.yml
-
-# Using environment variables (single bot mode)
-export TELECODE_BOT_TOKEN="your-bot-token"
-export TELECODE_ALLOWED_CHATS="your-chat-id"
-telecode
 ```
 
 ### Configuration File Locations
@@ -190,6 +173,8 @@ All bots support the following commands:
 | `/cli claude` | Switch to Claude Code |
 | `/cli opencode` | Switch to OpenCode |
 | `/status` | Show current status (workspace, CLI, session, model) |
+| `/model` | Show current model |
+| `/model <name>` | Set model (e.g., `/model claude-3-5-sonnet`) |
 | `/models` | List available models |
 | `/stats` | Show token usage statistics |
 

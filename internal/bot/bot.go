@@ -3,8 +3,6 @@ package bot
 import (
 	"fmt"
 	"os/exec"
-	"strconv"
-	"strings"
 	"sync"
 
 	"telecode/internal/executor"
@@ -89,6 +87,9 @@ func (b *Bot) SetModel(chatID int64, model string) {
 	settings := b.chatSettings[chatID]
 	settings.Model = model
 	b.chatSettings[chatID] = settings
+
+	// Reset session when model changes
+	b.sessionMgr.Delete(chatID)
 }
 
 // GetSessionID returns the session ID for a chat
@@ -170,20 +171,4 @@ func (b *Bot) GetStatus(chatID int64) (cli, sessionID, model string) {
 	}
 
 	return
-}
-
-// ParseAllowedChats parses the allowed chat_id list from environment variable
-func ParseAllowedChats(env string) map[int64]bool {
-	result := make(map[int64]bool)
-	if env == "" {
-		return result
-	}
-
-	for _, idStr := range strings.Split(env, ",") {
-		idStr = strings.TrimSpace(idStr)
-		if id, err := strconv.ParseInt(idStr, 10, 64); err == nil {
-			result[id] = true
-		}
-	}
-	return result
 }
