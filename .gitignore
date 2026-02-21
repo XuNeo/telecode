@@ -1,4 +1,5 @@
 # Binaries
+telecode
 *.exe
 *.dll
 *.so
