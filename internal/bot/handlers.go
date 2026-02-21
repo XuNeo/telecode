@@ -25,15 +25,14 @@ func (m *Manager) handleNewSession(ctx context.Context, ws *WorkspaceBot, chatID
 
 // handleStatus handles the /status command
 func (m *Manager) handleStatus(ctx context.Context, ws *WorkspaceBot, chatID int64) error {
-	cli, sessionID, model := ws.Bot.GetStatus(chatID)
+	cli, sessionID := ws.Bot.GetStatus(chatID)
 
 	statusMsg := fmt.Sprintf("📊 **Current Status**\n"+
 		"- Workspace: `%s`\n"+
 		"- Working Dir: `%s`\n"+
 		"- CLI: `%s`\n"+
-		"- Session: `%s`\n"+
-		"- Model: `%s`",
-		ws.Config.Name, ws.Config.WorkingDir, cli, sessionID, model)
+		"- Session: `%s`",
+		ws.Config.Name, ws.Config.WorkingDir, cli, sessionID)
 
 	_, err := ws.TgBot.SendMessage(ctx, tu.Message(
 		tu.ID(chatID),
@@ -77,57 +76,6 @@ func (m *Manager) handleCLI(ctx context.Context, ws *WorkspaceBot, chatID int64,
 	_, err := ws.TgBot.SendMessage(ctx, tu.Message(
 		tu.ID(chatID),
 		fmt.Sprintf("✅ CLI changed to: `%s` (session reset)", newCLI),
-	).WithParseMode(telego.ModeMarkdown))
-	return err
-}
-
-// handleModels handles the /models command
-func (m *Manager) handleModels(ctx context.Context, ws *WorkspaceBot, chatID int64) error {
-	models, err := ws.Bot.ListModels(chatID)
-	if err != nil {
-		_, err := ws.TgBot.SendMessage(ctx, tu.Message(
-			tu.ID(chatID),
-			fmt.Sprintf("❌ %v", err),
-		))
-		return err
-	}
-
-	modelList := "📋 **Available Models**\n"
-	for _, m := range models {
-		modelList += fmt.Sprintf("- `%s`\n", m)
-	}
-
-	_, err = ws.TgBot.SendMessage(ctx, tu.Message(
-		tu.ID(chatID),
-		modelList,
-	).WithParseMode(telego.ModeMarkdown))
-	return err
-}
-
-// handleModel handles the /model command
-func (m *Manager) handleModel(ctx context.Context, ws *WorkspaceBot, chatID int64, text string) error {
-	args := strings.Fields(text)
-
-	if len(args) == 1 {
-		// Get current model
-		model := ws.Bot.GetModel(chatID)
-		if model == "" {
-			model = "default"
-		}
-		_, err := ws.TgBot.SendMessage(ctx, tu.Message(
-			tu.ID(chatID),
-			fmt.Sprintf("📋 Current Model: `%s`", model),
-		).WithParseMode(telego.ModeMarkdown))
-		return err
-	}
-
-	// Set model
-	newModel := args[1]
-	ws.Bot.SetModel(chatID, newModel)
-
-	_, err := ws.TgBot.SendMessage(ctx, tu.Message(
-		tu.ID(chatID),
-		fmt.Sprintf("✅ Model set to: `%s` (session reset)", newModel),
 	).WithParseMode(telego.ModeMarkdown))
 	return err
 }

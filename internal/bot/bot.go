@@ -11,8 +11,7 @@ import (
 
 // ChatSettings stores per-chat configuration
 type ChatSettings struct {
-	CLI   string `json:"cli"`
-	Model string `json:"model"`
+	CLI string `json:"cli"`
 }
 
 // Bot handles the core logic of the Telegram bot
@@ -73,25 +72,6 @@ func (b *Bot) SetCLI(chatID int64, cli string) error {
 	return nil
 }
 
-// GetModel returns the model setting for a chat
-func (b *Bot) GetModel(chatID int64) string {
-	b.settingsMu.RLock()
-	defer b.settingsMu.RUnlock()
-	return b.chatSettings[chatID].Model
-}
-
-// SetModel sets the model for a chat
-func (b *Bot) SetModel(chatID int64, model string) {
-	b.settingsMu.Lock()
-	defer b.settingsMu.Unlock()
-	settings := b.chatSettings[chatID]
-	settings.Model = model
-	b.chatSettings[chatID] = settings
-
-	// Reset session when model changes
-	b.sessionMgr.Delete(chatID)
-}
-
 // GetSessionID returns the session ID for a chat
 func (b *Bot) GetSessionID(chatID int64) string {
 	return b.sessionMgr.Get(chatID)
@@ -127,24 +107,13 @@ func (b *Bot) GetExecutor(cli string) executor.Executor {
 func (b *Bot) BuildCommand(chatID int64, prompt, imagePath string) []string {
 	cli := b.GetCLI(chatID)
 	sessionID := b.GetSessionID(chatID)
-	model := b.GetModel(chatID)
 
 	exec := b.executors[cli]
 	if exec == nil {
 		return nil
 	}
 
-	return exec.BuildCommand(prompt, sessionID, imagePath, model)
-}
-
-// ListModels returns the list of available models for current CLI
-func (b *Bot) ListModels(chatID int64) ([]string, error) {
-	cli := b.GetCLI(chatID)
-	exec := b.executors[cli]
-	if exec == nil {
-		return nil, fmt.Errorf("unsupported CLI: %s", cli)
-	}
-	return exec.ListModels()
+	return exec.BuildCommand(prompt, sessionID, imagePath)
 }
 
 // GetStats returns statistics for current CLI
@@ -158,16 +127,12 @@ func (b *Bot) GetStats(chatID int64) (string, error) {
 }
 
 // GetStatus returns the current status
-func (b *Bot) GetStatus(chatID int64) (cli, sessionID, model string) {
+func (b *Bot) GetStatus(chatID int64) (cli, sessionID string) {
 	cli = b.GetCLI(chatID)
 	sessionID = b.GetSessionID(chatID)
-	model = b.GetModel(chatID)
 
 	if sessionID == "" {
 		sessionID = "none"
-	}
-	if model == "" {
-		model = "default"
 	}
 
 	return

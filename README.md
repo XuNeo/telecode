@@ -172,10 +172,7 @@ All bots support the following commands:
 | `/cli` | Show current CLI |
 | `/cli claude` | Switch to Claude Code |
 | `/cli opencode` | Switch to OpenCode |
-| `/status` | Show current status (workspace, CLI, session, model) |
-| `/model` | Show current model |
-| `/model <name>` | Set model (e.g., `/model claude-3-5-sonnet`) |
-| `/models` | List available models |
+| `/status` | Show current status (workspace, CLI, session) |
 | `/stats` | Show token usage statistics |
 
 ### Regular Messages

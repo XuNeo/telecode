@@ -9,15 +9,11 @@ import (
 type ClaudeExecutor struct{}
 
 // BuildCommand builds the Claude Code command
-func (e *ClaudeExecutor) BuildCommand(prompt, sessionID, imagePath, model string) []string {
+func (e *ClaudeExecutor) BuildCommand(prompt, sessionID, imagePath string) []string {
 	cmd := []string{"claude", "-p", prompt}
 
 	if sessionID != "" {
 		cmd = append(cmd, "--resume", sessionID)
-	}
-
-	if model != "" {
-		cmd = append(cmd, "--model", model)
 	}
 
 	if imagePath != "" {
@@ -51,17 +47,6 @@ func (e *ClaudeExecutor) ParseSessionID(output string) string {
 // Name returns the Executor name
 func (e *ClaudeExecutor) Name() string {
 	return "claude"
-}
-
-// ListModels returns the list of available models
-func (e *ClaudeExecutor) ListModels() ([]string, error) {
-	// Return hardcoded list for Claude Code
-	// Could parse from 'claude --help' in the future
-	return []string{
-		"claude-3-5-sonnet-latest",
-		"claude-3-5-haiku-latest",
-		"claude-3-opus-latest",
-	}, nil
 }
 
 // Stats returns statistics information

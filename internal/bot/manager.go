@@ -122,10 +122,6 @@ func (m *Manager) handleUpdate(ctx context.Context, ws *WorkspaceBot, update tel
 		return m.handleStatus(ctx, ws, chatID)
 	case "/cli":
 		return m.handleCLI(ctx, ws, chatID, update.Message.Text)
-	case "/model":
-		return m.handleModel(ctx, ws, chatID, update.Message.Text)
-	case "/models":
-		return m.handleModels(ctx, ws, chatID)
 	case "/stats":
 		return m.handleStats(ctx, ws, chatID)
 	default:
