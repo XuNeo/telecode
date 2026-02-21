@@ -114,11 +114,24 @@ func (m *Manager) handleMessage(ctx context.Context, ws *WorkspaceBot, chatID in
 		return nil
 	}
 
-	// Send typing action
-	_ = ws.TgBot.SendChatAction(ctx, &telego.SendChatActionParams{
-		ChatID: tu.ID(chatID),
-		Action: telego.ChatActionTyping,
-	})
+	// Send typing action periodically while processing
+	typingCtx, cancelTyping := context.WithCancel(ctx)
+	defer cancelTyping()
+	go func() {
+		ticker := time.NewTicker(4 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-typingCtx.Done():
+				return
+			case <-ticker.C:
+				_ = ws.TgBot.SendChatAction(ctx, &telego.SendChatActionParams{
+					ChatID: tu.ID(chatID),
+					Action: telego.ChatActionTyping,
+				})
+			}
+		}
+	}()
 
 	// Execute command with working directory
 	output := runCommandWithDir(cmd, ws.Config.WorkingDir)
