@@ -10,7 +10,7 @@ type OpenCodeExecutor struct{}
 
 // BuildCommand builds the OpenCode command
 func (e *OpenCodeExecutor) BuildCommand(prompt, sessionID, imagePath string) []string {
-	cmd := []string{"opencode", "run", prompt}
+	cmd := []string{"opencode", "run", "--format", "json", prompt}
 
 	if sessionID != "" {
 		cmd = append(cmd, "--session", sessionID)
@@ -23,27 +23,15 @@ func (e *OpenCodeExecutor) BuildCommand(prompt, sessionID, imagePath string) []s
 	return cmd
 }
 
-// ParseSessionID extracts session ID from OpenCode output
+// ParseSessionID extracts session ID from OpenCode JSON output
 func (e *OpenCodeExecutor) ParseSessionID(output string) string {
-	// Parse OpenCode session ID format
-	// Examples:
-	//   "Continue  opencode -s ses_37f9659a6ffemnd5vvn1GC2Y5Q"
-	//   "session: ses_abc123"
-	patterns := []string{
-		`-s\s+([a-zA-Z0-9_-]+)`,
-		`session[:\s]+([a-zA-Z0-9_-]+)`,
-		`session\s*id[:\s]+([a-zA-Z0-9_-]+)`,
-		`--session\s+([a-zA-Z0-9_-]+)`,
+	// Parse sessionID from JSON output (e.g., {"type":"step_start","sessionID":"ses_xxx",...})
+	// Look for "sessionID":"ses_..." pattern in the first JSON line
+	re := regexp.MustCompile(`"sessionID":"(ses_[a-zA-Z0-9_-]+)"`)
+	match := re.FindStringSubmatch(output)
+	if len(match) > 1 {
+		return match[1]
 	}
-
-	for _, pattern := range patterns {
-		re := regexp.MustCompile(pattern)
-		match := re.FindStringSubmatch(output)
-		if len(match) > 1 {
-			return match[1]
-		}
-	}
-
 	return ""
 }
 

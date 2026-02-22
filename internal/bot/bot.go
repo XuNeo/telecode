@@ -84,10 +84,6 @@ func (b *Bot) NewSession(chatID int64) {
 
 // UpdateSessionFromOutput extracts and saves session ID from output
 func (b *Bot) UpdateSessionFromOutput(chatID int64, cli, output string) {
-	if b.sessionMgr.Exists(chatID) {
-		return // Don't update if session already exists
-	}
-
 	exec := b.executors[cli]
 	if exec == nil {
 		return

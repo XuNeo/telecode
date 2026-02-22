@@ -136,8 +136,13 @@ func (m *Manager) handleMessage(ctx context.Context, ws *WorkspaceBot, chatID in
 	// Execute command with working directory
 	output := runCommandWithDir(cmd, ws.Config.WorkingDir)
 
-	// Save session ID
+	// Save session ID (from raw output before JSON parsing)
 	ws.Bot.UpdateSessionFromOutput(chatID, ws.Bot.GetCLI(chatID), output)
+
+	// For OpenCode, extract text from JSON output
+	if ws.Bot.GetCLI(chatID) == "opencode" {
+		output = extractTextFromOpenCodeJSON(output)
+	}
 
 	// Send result (chunked)
 	return sendChunks(ctx, ws.TgBot, chatID, output)

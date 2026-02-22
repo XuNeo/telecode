@@ -1,10 +1,13 @@
 package bot
 
 import (
+	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -45,4 +48,38 @@ func runCommandWithDir(cmd []string, workingDir string) string {
 	}
 
 	return stripAnsiCodes(string(output))
+}
+
+// extractTextFromOpenCodeJSON parses OpenCode JSON output and extracts text responses
+func extractTextFromOpenCodeJSON(output string) string {
+	var texts []string
+	scanner := bufio.NewScanner(strings.NewReader(output))
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		var event map[string]interface{}
+		if err := json.Unmarshal([]byte(line), &event); err != nil {
+			// Not a JSON line, skip
+			continue
+		}
+
+		// Extract text from text events
+		if eventType, ok := event["type"].(string); ok && eventType == "text" {
+			if part, ok := event["part"].(map[string]interface{}); ok {
+				if text, ok := part["text"].(string); ok && text != "" {
+					texts = append(texts, text)
+				}
+			}
+		}
+	}
+
+	if len(texts) == 0 {
+		return output // Return original if no text found
+	}
+
+	return strings.Join(texts, "\n\n")
 }
