@@ -1,5 +1,5 @@
 # Binaries
-telecode
+/telecode
 *.exe
 *.dll
 *.so

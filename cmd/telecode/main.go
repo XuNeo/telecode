@@ -12,11 +12,24 @@ import (
 	"telecode/internal/config"
 )
 
+// version is set during build via ldflags
+var version = "dev"
+
 func main() {
 	// Command line flags
 	configPath := flag.String("config", "", "Path to config file (default: auto-detect)")
 	generateConfig := flag.Bool("generate-config", false, "Generate example config file")
+	showVersion := flag.Bool("version", false, "Show version information")
 	flag.Parse()
+
+	// Show version and exit if requested
+	if *showVersion {
+		fmt.Printf("telecode version %s\n", version)
+		os.Exit(0)
+	}
+
+	// Print version on startup
+	fmt.Printf("🤖 Telecode v%s\n\n", version)
 
 	// Generate example config if requested
 	if *generateConfig {
