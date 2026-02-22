@@ -8,6 +8,7 @@ workspaces:
     allowed_chats:
       - 123456789
     default_cli: opencode
+    model: anthropic/opus-4.6  # OpenCode model (optional)
 
   - name: project-b
     working_dir: /home/user/project-b

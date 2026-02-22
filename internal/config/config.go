@@ -16,6 +16,7 @@ type WorkspaceConfig struct {
 	AllowedChats   []int64       `yaml:"allowed_chats,omitempty"`
 	DefaultCLI     string        `yaml:"default_cli,omitempty"`
 	CommandTimeout time.Duration `yaml:"command_timeout,omitempty"`
+	Model          string        `yaml:"model,omitempty"`
 }
 
 // Config represents the complete telecode configuration
@@ -91,6 +92,7 @@ workspaces:
       - 123456789
     default_cli: opencode
     command_timeout: 20m
+    # model: anthropic/opus-4.6  # Optional: OpenCode model (defaults to opus-4.6)
 
   - name: project-b
     working_dir: /home/user/project-b

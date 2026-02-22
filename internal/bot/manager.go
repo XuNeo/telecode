@@ -34,7 +34,7 @@ func NewManager(cfg *config.Config) (*Manager, error) {
 		}
 
 		// Create bot logic instance
-		botLogic := NewBot(allowedChats, wsConfig.DefaultCLI)
+		botLogic := NewBot(allowedChats, wsConfig.DefaultCLI, wsConfig.Model)
 
 		// Create Telegram bot
 		var botOpts []telego.BotOption

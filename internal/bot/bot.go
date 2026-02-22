@@ -22,10 +22,11 @@ type Bot struct {
 	allowedChats map[int64]bool
 	executors    map[string]executor.Executor
 	defaultCLI   string
+	model        string
 }
 
 // NewBot creates a new bot instance
-func NewBot(allowedChats map[int64]bool, defaultCLI string) *Bot {
+func NewBot(allowedChats map[int64]bool, defaultCLI string, model string) *Bot {
 	return &Bot{
 		sessionMgr:   session.NewManager(),
 		chatSettings: make(map[int64]ChatSettings),
@@ -35,6 +36,7 @@ func NewBot(allowedChats map[int64]bool, defaultCLI string) *Bot {
 			"opencode": &executor.OpenCodeExecutor{},
 		},
 		defaultCLI: defaultCLI,
+		model:      model,
 	}
 }
 
@@ -109,7 +111,7 @@ func (b *Bot) BuildCommand(chatID int64, prompt, imagePath string) []string {
 		return nil
 	}
 
-	return exec.BuildCommand(prompt, sessionID, imagePath)
+	return exec.BuildCommand(prompt, sessionID, imagePath, b.model)
 }
 
 // GetStats returns statistics for current CLI

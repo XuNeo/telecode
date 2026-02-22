@@ -13,7 +13,7 @@ import (
 )
 
 // version is set during build via ldflags
-var version = "dev"
+var version = "0.1.3"
 
 func main() {
 	// Command line flags

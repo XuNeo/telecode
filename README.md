@@ -4,7 +4,7 @@ A multi-bot server for remotely using AI coding assistants (Claude Code, OpenCod
 
 ## Features
 
-- 🚀 **Lightweight**: Single binary execution
+- 🚀 **Lightweight**: Single binary execution (statically linked)
 - 💰 **Cost-effective**: Only token costs (no hosting fees)
 - 🔒 **Secure**: Allowlist-based access control
 - 💬 **Interactive Sessions**: Per-chat_id session persistence
@@ -12,6 +12,8 @@ A multi-bot server for remotely using AI coding assistants (Claude Code, OpenCod
 - 🔄 **Multi-CLI**: Choose between Claude Code and OpenCode
 - 🏗️ **Multi-Bot**: Manage multiple projects with separate bots
 - 📁 **Project Isolation**: Each bot works in its own working directory
+- ⏱️ **Configurable Timeout**: Set command execution timeout per workspace
+- 📊 **Smart Output**: Automatic JSON parsing for OpenCode responses
 
 ## Installation
 
@@ -36,7 +38,7 @@ wget -qO- https://raw.githubusercontent.com/futureCreator/telecode/main/install.
 ```
 
 This will:
-- Download the latest release binary from GitHub
+- Download the latest statically-linked binary from GitHub
 - Install to `~/.local/bin`
 - Create config at `~/.telecode/config.yml`
 - Warn if `~/.local/bin` is not in your PATH
@@ -53,22 +55,26 @@ telecode
 
 ### Manual Installation
 
-#### Build Binary
+#### Build Binary (Statically Linked)
 
 ```bash
 # macOS
-GOOS=darwin GOARCH=amd64 go build -o telecode-darwin-amd64 ./cmd/telecode
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w -extldflags '-static'" -o telecode-darwin-amd64 ./cmd/telecode
 
 # Linux
-GOOS=linux GOARCH=amd64 go build -o telecode-linux-amd64 ./cmd/telecode
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -extldflags '-static'" -o telecode-linux-amd64 ./cmd/telecode
 
 # Windows
-GOOS=windows GOARCH=amd64 go build -o telecode-windows-amd64.exe ./cmd/telecode
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w -extldflags '-static'" -o telecode-windows-amd64.exe ./cmd/telecode
 ```
 
-#### Build Locally
+#### Build Locally (using Makefile)
 
 ```bash
+# Build for current platform (statically linked)
+make build
+
+# Or build manually
 go build -o telecode ./cmd/telecode
 ```
 
@@ -136,12 +142,22 @@ workspaces:
 | `bot_token` | Telegram Bot API token | ✅ | - |
 | `allowed_chats` | List of allowed chat_ids | ❌ | All blocked |
 | `default_cli` | Default CLI (claude/opencode) | ❌ | `claude` |
+| `model` | OpenCode model (provider/model format) | ❌ | `anthropic/opus-4.6` |
+| `command_timeout` | Command execution timeout | ❌ | `20m` |
 
 ### CLI API Keys
 
 Claude Code and OpenCode manage their own API keys, no additional configuration needed.
 
 ## Usage
+
+### Command Line Flags
+
+| Flag | Description | Example |
+|------|-------------|---------|
+| `-config` | Path to configuration file | `-config /path/to/config.yml` |
+| `-generate-config` | Generate example configuration file | `-generate-config` |
+| `-version` | Show version information | `-version` |
 
 ### Start the Server
 
@@ -151,6 +167,9 @@ telecode
 
 # Specify custom config file
 telecode -config /path/to/config.yml
+
+# Show version
+telecode -version
 ```
 
 ### Configuration File Locations
@@ -194,6 +213,10 @@ Send a photo with a caption to analyze it:
 ```
 
 If no caption is provided, it defaults to "Analyze this image".
+
+### OpenCode JSON Output
+
+When using OpenCode CLI, responses are automatically parsed from JSON format, providing clean, readable output in Telegram.
 
 ## Multi-Project Workflow Example
 
@@ -317,6 +340,53 @@ sudo systemctl enable telecode
 sudo systemctl start telecode
 ```
 
+## Development
+
+### Makefile Commands
+
+The project includes a comprehensive Makefile for development tasks:
+
+```bash
+# Build commands
+make build              # Build for current platform (statically linked)
+make cross-build        # Build for all platforms (Linux, macOS, Windows)
+make build-race         # Build with race detector (for debugging)
+
+# Installation
+make install            # Install to GOPATH/bin
+make install-system     # Install to /usr/local/bin (requires sudo)
+
+# Development
+make run                # Build and run
+make run-config         # Run with telecode.yml config
+make dev                # Run with hot reload (requires air)
+
+# Code quality
+make test               # Run tests
+make test-coverage      # Run tests with coverage report
+make fmt                # Format code with go fmt
+make lint               # Run golangci-lint
+make tidy               # Tidy go modules
+
+# Utilities
+make generate-config    # Generate example configuration
+make verify-static      # Verify binary is statically linked
+make clean              # Remove build artifacts
+make help               # Show all available commands
+```
+
+### Static Linking
+
+All binaries are statically linked for maximum portability:
+
+```bash
+# Build static binary
+make build
+
+# Verify static linking
+make verify-static
+```
+
 ## Project Structure
 
 ```
@@ -353,6 +423,12 @@ telecode/
 - Configuration files should have restricted permissions (chmod 600)
 
 ## Troubleshooting
+
+### Check Version
+
+```bash
+telecode -version
+```
 
 ### Bot not responding
 
@@ -391,6 +467,18 @@ Ensure the user running telecode has read/write access:
 ```bash
 chown -R $(whoami) /path/to/project
 chmod 755 /path/to/project
+```
+
+### Command timeout issues
+
+If commands are timing out, increase the timeout in your config:
+
+```yaml
+workspaces:
+  - name: my-project
+    working_dir: /path/to/project
+    bot_token: "YOUR_TOKEN"
+    command_timeout: 30m  # Increase from default 20m
 ```
 
 ## License

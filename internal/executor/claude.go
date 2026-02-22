@@ -9,7 +9,7 @@ import (
 type ClaudeExecutor struct{}
 
 // BuildCommand builds the Claude Code command
-func (e *ClaudeExecutor) BuildCommand(prompt, sessionID, imagePath string) []string {
+func (e *ClaudeExecutor) BuildCommand(prompt, sessionID, imagePath string, model string) []string {
 	cmd := []string{"claude", "-p", prompt}
 
 	if sessionID != "" {

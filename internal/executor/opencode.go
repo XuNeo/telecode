@@ -9,8 +9,12 @@ import (
 type OpenCodeExecutor struct{}
 
 // BuildCommand builds the OpenCode command
-func (e *OpenCodeExecutor) BuildCommand(prompt, sessionID, imagePath string) []string {
-	cmd := []string{"opencode", "run", "--format", "json", prompt}
+func (e *OpenCodeExecutor) BuildCommand(prompt, sessionID, imagePath string, model string) []string {
+	// Use default model if not specified
+	if model == "" {
+		model = "anthropic/opus-4.6"
+	}
+	cmd := []string{"opencode", "run", "--format", "json", "--model", model, prompt}
 
 	if sessionID != "" {
 		cmd = append(cmd, "--session", sessionID)
