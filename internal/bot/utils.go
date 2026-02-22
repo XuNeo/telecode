@@ -27,12 +27,12 @@ func stripAnsiCodes(text string) string {
 }
 
 // runCommandWithDir executes a CLI command in a specific working directory
-func runCommandWithDir(cmd []string, workingDir string) string {
+func runCommandWithDir(cmd []string, workingDir string, timeout time.Duration) string {
 	if len(cmd) == 0 {
 		return "Error: Command is empty"
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	command := exec.CommandContext(ctx, cmd[0], cmd[1:]...)
@@ -40,7 +40,7 @@ func runCommandWithDir(cmd []string, workingDir string) string {
 	output, err := command.CombinedOutput()
 
 	if ctx.Err() == context.DeadlineExceeded {
-		return "Error: Command execution timeout (5 minutes)"
+		return fmt.Sprintf("Error: Command execution timeout (%v)", timeout)
 	}
 
 	if err != nil {

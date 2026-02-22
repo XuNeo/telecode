@@ -134,7 +134,7 @@ func (m *Manager) handleMessage(ctx context.Context, ws *WorkspaceBot, chatID in
 	}()
 
 	// Execute command with working directory
-	output := runCommandWithDir(cmd, ws.Config.WorkingDir)
+	output := runCommandWithDir(cmd, ws.Config.WorkingDir, ws.Config.CommandTimeout)
 
 	// Save session ID (from raw output before JSON parsing)
 	ws.Bot.UpdateSessionFromOutput(chatID, ws.Bot.GetCLI(chatID), output)

@@ -3,17 +3,19 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
 // WorkspaceConfig represents a single workspace/bot configuration
 type WorkspaceConfig struct {
-	Name         string  `yaml:"name"`
-	WorkingDir   string  `yaml:"working_dir"`
-	BotToken     string  `yaml:"bot_token"`
-	AllowedChats []int64 `yaml:"allowed_chats,omitempty"`
-	DefaultCLI   string  `yaml:"default_cli,omitempty"`
+	Name           string        `yaml:"name"`
+	WorkingDir     string        `yaml:"working_dir"`
+	BotToken       string        `yaml:"bot_token"`
+	AllowedChats   []int64       `yaml:"allowed_chats,omitempty"`
+	DefaultCLI     string        `yaml:"default_cli,omitempty"`
+	CommandTimeout time.Duration `yaml:"command_timeout,omitempty"`
 }
 
 // Config represents the complete telecode configuration
@@ -37,6 +39,9 @@ func LoadConfig(path string) (*Config, error) {
 	for i := range cfg.Workspaces {
 		if cfg.Workspaces[i].DefaultCLI == "" {
 			cfg.Workspaces[i].DefaultCLI = "claude"
+		}
+		if cfg.Workspaces[i].CommandTimeout == 0 {
+			cfg.Workspaces[i].CommandTimeout = 20 * time.Minute
 		}
 		if cfg.Workspaces[i].WorkingDir == "" {
 			return nil, fmt.Errorf("workspace %d: working_dir is required", i)
@@ -85,6 +90,7 @@ workspaces:
     allowed_chats:
       - 123456789
     default_cli: opencode
+    command_timeout: 20m
 
   - name: project-b
     working_dir: /home/user/project-b
@@ -92,6 +98,7 @@ workspaces:
     allowed_chats:
       - 987654321
     default_cli: claude
+    # command_timeout defaults to 20m if not specified
 `
 	return os.WriteFile(path, []byte(example), 0644)
 }
