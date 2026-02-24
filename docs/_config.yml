@@ -1,0 +1,9 @@
+theme: jekyll-theme-cayman
+title: Telecode
+description: Telegram Coding Agent Bot - A multi-bot server for remotely using AI coding assistants via Telegram
+show_downloads: true
+github:
+  zip_url: https://github.com/futureCreator/telecode/archive/refs/heads/main.zip
+  tar_url: https://github.com/futureCreator/telecode/archive/refs/heads/main.tar.gz
+baseurl: "/telecode"
+url: "https://futurecreator.github.io"
